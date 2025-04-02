@@ -21,19 +21,7 @@ runs:
       with:
         repository: mtararujs/python-greetings
         path: python-greetings
-    
-    # - name: Stop service if exists (Windows)
-    #   if: runner.os == 'Windows'
-    #   shell: cmd
-    #   working-directory: python-greetings
-    #   run: pm2 delete greetings-app-${{ inputs.env_name }} & set "errorlevel=0"
-    
-    # - name: Stop service if exists (Unix)
-    #   if: runner.os != 'Windows'
-    #   shell: bash
-    #   working-directory: python-greetings
-    #   run: pm2 delete greetings-app-${{ inputs.env_name }} || true
-    
+        
     - name: Start application
       shell: bash
       working-directory: python-greetings
