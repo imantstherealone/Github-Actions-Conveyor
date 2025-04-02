@@ -1,0 +1,50 @@
+name: 'deploy-app'
+description: 'Deploy Python Greetings application to specified environment'
+
+inputs:
+  env_name:
+    description: 'Environment name (dev, staging, preprod, prod)'
+    required: true
+  port:
+    description: 'App port number'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Info
+      shell: bash
+      run: echo "Deploying to ${{ inputs.env_name }} environment..."
+    
+    - name: Checkout Python Greetings repository
+      uses: actions/checkout@v4
+      with:
+        repository: mtararujs/python-greetings
+        path: python-greetings
+    
+    # - name: Stop service if exists (Windows)
+    #   if: runner.os == 'Windows'
+    #   shell: cmd
+    #   working-directory: python-greetings
+    #   run: pm2 delete greetings-app-${{ inputs.env_name }} & set "errorlevel=0"
+    
+    # - name: Stop service if exists (Unix)
+    #   if: runner.os != 'Windows'
+    #   shell: bash
+    #   working-directory: python-greetings
+    #   run: pm2 delete greetings-app-${{ inputs.env_name }} || true
+    
+    - name: Start application
+      shell: bash
+      working-directory: python-greetings
+      run: |
+
+        python3 -m venv venv || true
+        source venv/bin/activate
+        pip install -r requirements.txt
+
+        pm2 delete greetings-app-${{ inputs.env_name }} || true
+        pm2 start app.py --name greetings-app-${{ inputs.env_name }} --interpreter $(pwd)/venv/bin/python -- --port ${{ inputs.port }}
+        
+        pm2 status
+        sleep 5
